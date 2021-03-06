@@ -11,7 +11,12 @@
 // 'use strict';
 const Paho = require('paho-mqtt'); // https://www.npmjs.com/package/paho-mqtt
 import {ARENAUtils} from './utils.js';
-import {ClientEvent, CreateUpdate, Delete} from './message-actions/';
+import {
+    ClientEvent,
+    CreateUpdate,
+    Delete,
+    PhysicsEvent,
+} from './message-actions/';
 
 /**
  * Main ARENA MQTT client
@@ -145,6 +150,13 @@ export class ARENAMqtt {
                     return;
                 }
                 ClientEvent.handle(theMessage);
+                break;
+            case 'physicsEvent':
+                if (theMessage.data === undefined) {
+                    console.warn('Malformed message (no data field):', JSON.stringify(message));
+                    return;
+                }
+                PhysicsEvent.handle(theMessage)
                 break;
             case 'create':
             case 'update':

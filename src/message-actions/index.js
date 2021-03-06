@@ -9,5 +9,6 @@
 import {ClientEvent} from './client-event.js';
 import {CreateUpdate} from './create-update.js';
 import {Delete} from './delete.js';
+import {PhysicsEvent} from './physics-event';
 
-export {ClientEvent, CreateUpdate, Delete};
+export {ClientEvent, CreateUpdate, Delete, PhysicsEvent};
