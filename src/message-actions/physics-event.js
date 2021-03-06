@@ -37,14 +37,13 @@ export class PhysicsEvent {
                 angular_velocity: angV,
             } = data;
             // Update physics first
-            entityEl.body.position = {x: position[0], y: position[1], z: position[2]};
-            const tempQuaternion = new THREE.Quaternion(rotation[0],
-                rotation[1], rotation[2], rotation[3]);
+            entityEl.body.position = new CANNON.Vec3(...position);
+            const tempQuaternion = new THREE.Quaternion(...rotation);
             entityEl.body.quaternion.copy(tempQuaternion);
-            entityEl.body.velocity = {x: linV[0], y: linV[1], z: linV[2]};
-            entityEl.body.angularVelocity = {x: angV[0], y: angV[1], z: angV[2]};
+            entityEl.body.velocity = new CANNON.Vec3(...linV);
+            entityEl.body.angularVelocity = new CANNON.Vec3(...angV);
             // Update AFrame attributes
-            entityEl.object3D.position.set(position[0], position[1], position[2]);
+            entityEl.object3D.position.set(...position);
             entityEl.object3D.quaternion.copy(tempQuaternion);
             break;
         default:
