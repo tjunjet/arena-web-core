@@ -37,13 +37,13 @@ export class PhysicsEvent {
                 angular_velocity: angV,
             } = data;
             // Update physics first
-            entityEl.body.position = new CANNON.Vec3(...position);
-            const tempQuaternion = new THREE.Quaternion(...rotation);
+            entityEl.body.position = new CANNON.Vec3(position.x, position.y, position.z);
+            const tempQuaternion = new THREE.Quaternion(rotation.x, rotation.y, rotation.z);
             entityEl.body.quaternion.copy(tempQuaternion);
             entityEl.body.velocity = new CANNON.Vec3(...linV);
             entityEl.body.angularVelocity = new CANNON.Vec3(...angV);
             // Update AFrame attributes
-            entityEl.object3D.position.set(...position);
+            entityEl.object3D.position.set(position.x, position.y, position.z);
             entityEl.object3D.quaternion.copy(tempQuaternion);
             break;
         default:
