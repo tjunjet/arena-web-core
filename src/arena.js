@@ -565,6 +565,34 @@ export class Arena {
                 this.FaceTracker.init(displayBbox, flipped);
             }
 
+            console.log("***Starting in 3s");
+            setTimeout(async function(){ 
+                
+
+                setInterval(async function() { 
+                    console.log('clicking..')
+                    console.time("timming::click-time");
+                    console.time("timming::publish-time");
+                    const thisMsg = {
+                        object_id: 'my_box',
+                        action: 'clientEvent',
+                        type: 'mousedown',
+                        data: {
+                            clickPos: {},
+                            position: {},
+                            source: ARENA.camName,
+                        },
+                    };
+                    // publishing events attached to user id objects allows sculpting security
+                    await ARENA.Mqtt.publish(ARENA.outputTopic + ARENA.camName, thisMsg);
+                    console.timeEnd("timming::publish-time");
+    
+                }, 1000);
+
+            
+             }, 3000);
+
+
             console.info('ARENA Started; ARENA=', ARENA);
         }); // mqtt API (after this.* above, are defined)
     }

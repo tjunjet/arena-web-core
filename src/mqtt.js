@@ -56,6 +56,7 @@ export class ARENAMqtt {
      * @param {object} jsonMessage
      */
     _onMessageArrived(message, jsonMessage) {
+        console.time("timming::receive-time");
         let theMessage = {};
 
         if (message) {
@@ -84,12 +85,19 @@ export class ARENAMqtt {
         // rename object_id to match internal handlers (and aframe)
         theMessage.id = theMessage.object_id;
         delete theMessage.object_id;
-
+        console.timeEnd("timming::receive-time");
         switch (theMessage.action) { // clientEvent, create, delete, update
         case 'clientEvent':
             if (theMessage.data === undefined) {
                 console.warn('Malformed message (no data field):', JSON.stringify(message));
                 return;
+            }
+            // check topic
+            if (message) {
+                if (!message.destinationName.endsWith(theMessage.data.source)) {
+                    console.warn('Malformed message (topic does not pass check):', JSON.stringify(message), message.destinationName);
+                    return;
+                }
             }
             ClientEvent.handle(theMessage);
             break;
@@ -98,6 +106,13 @@ export class ARENAMqtt {
             if (theMessage.data === undefined) {
                 console.warn('Malformed message (no data field):', JSON.stringify(message));
                 return;
+            }
+            // check topic
+            if (message) {
+                if (!message.destinationName.endsWith(theMessage.id)) {
+                    console.warn('Malformed message (topic does not pass check):', JSON.stringify(message), message.destinationName);
+                    return;
+                } 
             }
             CreateUpdate.handle(theMessage.action, theMessage);
             break;

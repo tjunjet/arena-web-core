@@ -102,6 +102,7 @@ export class CreateUpdate {
                 entityEl.setAttribute('ttl', {seconds: message.ttl});
             }
 
+            console.timeEnd("timming::click-time");
             return;
 
         case 'camera-override':
