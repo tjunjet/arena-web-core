@@ -118,6 +118,10 @@ export class CreateUpdate {
             return;
 
         case 'scene-options':
+            // notify user to reload with new scene options
+            ARENA.health.addError('scene-options.changed');
+            return;
+
         case 'face-features':
         case 'landmarks':
             // TODO : Remove once all existing persist landmark entities have converted
@@ -171,7 +175,7 @@ export class CreateUpdate {
             if (ARENA.ar && data.hasOwnProperty('hide-on-enter-ar')) {
                 console.warn(`Skipping hide-on-enter-ar GLTF: ${entityEl.getAttribute('id')}`);
                 return false; // do not add this object
-            }            
+            }
             // support both url and src property
             if (data.hasOwnProperty('url')) {
                 data.src = data.url; // make src=url

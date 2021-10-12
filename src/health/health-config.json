@@ -23,4 +23,9 @@
     "class": "health-warning-label",
     "title": "Events Publish Behavior is too high",
     "helpLink": "https://arena.conix.io/content/troubleshooting.html#warning-events-publish-behavior-is-too-high"
+}, {
+    "errorCode": "scene-options.changed",
+    "class": "health-warning-label",
+    "title": "Scene options have changed, reload for changes",
+    "helpLink": "#"
 }]
