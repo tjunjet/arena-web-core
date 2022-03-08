@@ -17,6 +17,7 @@ import './arena-hand.js';
 import './attribution.js';
 import './click-listener.js';
 import './collision-listener.js';
+import './depth-api';
 import './gesture-detector.js';
 import './gltf-lod.js';
 import './goto-url.js';

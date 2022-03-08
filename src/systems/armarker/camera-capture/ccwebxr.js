@@ -320,6 +320,8 @@ export class WebXRCameraCapture {
 
                 this.getCameraFramePixels(time, session, view);
             }
+            const depthData = frame.getDepthInformation(view);
+            console.log(depthData);
         }
     }
 
