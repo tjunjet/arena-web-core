@@ -30,7 +30,5 @@ AFRAME.registerComponent('depth-api', {
         this.el.sceneEl.renderer.xr.addEventListener('sessionend', () => {
             this.running = false;
         });
-
-        this.tick = AFRAME.utils.throttleTick(this.tick, this.data.updateRate, this);
     },
 });
