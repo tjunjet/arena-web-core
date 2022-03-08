@@ -20,8 +20,8 @@ AFRAME.registerComponent('depth-api', {
         if (!requiredFeaturesArray.includes('depth-sensing')) {
             requiredFeaturesArray.push('depth-sensing');
             webxrSys.sessionConfiguration.depthSensing = {
-                usagePreference: this.data.usagePreference,
-                dataFormatPreference: this.data.dataFormatPreference,
+                usagePreference: [this.data.usagePreference],
+                dataFormatPreference: [this.data.dataFormatPreference],
             };
         }
         this.el.sceneEl.renderer.xr.addEventListener('sessionstart', () => {
