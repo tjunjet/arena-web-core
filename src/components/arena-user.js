@@ -14,7 +14,7 @@
  * @param {Object} gainNode
  * @private
  */
- async function enableChromeAEC(gainNode) {
+async function enableChromeAEC(gainNode) {
     /**
      *  workaround for: https://bugs.chromium.org/p/chromium/issues/detail?id=687574
      *  1. grab the GainNode from the scene's THREE.AudioListener
@@ -107,6 +107,7 @@ AFRAME.registerComponent('arena-user', {
         const el = this.el;
         const name = el.id;
 
+        el.setAttribute('click-listener', '');
         el.setAttribute('rotation.order', 'YXZ');
         el.object3D.position.set(0, ARENA.defaults.camHeight, 0);
         el.object3D.rotation.set(0, 0, 0);
@@ -140,6 +141,40 @@ AFRAME.registerComponent('arena-user', {
         this.videoID = null;
         this.audioID = null;
         this.distReached = null;
+
+        // el.addEventListener('mouseenter', function(evt) {
+        //     const camera = document.getElementById('my-camera');
+        //     const position = camera.getAttribute('position');
+
+        //     const clickPos = ARENAUtils.vec3ToObject(position);
+        //     const coordsData = ARENAUtils.setCoordsData(evt);
+
+        //     if ('cursorEl' in evt.detail) {
+        //         // original click event; simply publish to MQTT
+        //         const thisMsg = {
+        //             object_id: this.id,
+        //             action: 'clientEvent',
+        //             type: 'mouseenter',
+        //             data: {
+        //                 clickPos: clickPos,
+        //                 position: coordsData,
+        //                 source: ARENA.camName,
+        //             },
+        //         };
+        //         if (!self.el.getAttribute('goto-url') && !self.el.getAttribute('textinput')) {
+        //             // publishing events attached to user id objects allows sculpting security
+        //             ARENA.Mqtt.publish(`${ARENA.outputTopic}${ARENA.camName}`, thisMsg);
+        //         }
+        //         window.lastMouseTarget = this.id;
+        //     }
+        // });
+        el.addEventListener('mouseenter', function(evt) {
+        // el.addEventListener('hover', function(evt) {
+            console.warn('hover', evt);
+            // lastIndex = (lastIndex + 1) % COLORS.length;
+            // this.setAttribute('material', 'color', COLORS[lastIndex]);
+            // console.log('I was clicked at: ', evt.detail.intersection.point);
+        });
 
         // used in tick()
         this.entityPos = this.el.object3D.position;
