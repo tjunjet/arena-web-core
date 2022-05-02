@@ -28,6 +28,8 @@ AFRAME.registerComponent('jitsi-video', {
         ARENA.events.on(ARENAEventEmitter.events.JITSI_CONNECT, (e) => this.jitsiConnect(e.detail));
         ARENA.events.on(ARENAEventEmitter.events.USER_JOINED, (e) => this.jitsiNewUser(e.detail));
         ARENA.events.on(ARENAEventEmitter.events.USER_LEFT, (e) => this.jitsiUserLeft(e.detail));
+
+        this.tick = AFRAME.utils.throttleTick(this.tick, 1000, this);
     },
     update: function(oldData) {
         const data = this.data;
@@ -103,5 +105,14 @@ AFRAME.registerComponent('jitsi-video', {
         setTimeout(async () => {
             this.updateVideo();
         }, 500); // try again in a bit
+    },
+    tick: function() {
+
+        const myCam = document.getElementById('my-camera');
+        const myCamPos = myCam.object3D.position;
+        const arenaCameraComponent = myCam.components['arena-camera'];
+
+        const distance = myCamPos.distanceTo(this.entityPos);
+
     },
 });
