@@ -283,7 +283,7 @@ const handleUpdateNode = (worldMesh, object) => {
             }
             position.setArray(vertexPositions);
             position.needsUpdate = true;
-            // updateMsg.vertexPositions = vertexPositions;
+            updateMsg.vertexPositions = vertexPositions;
         }
         if (worldMesh.textureCoordinatesChanged) {
             const uv = object.threeMesh.geometry.attributes.uv;
@@ -314,7 +314,8 @@ const handleUpdateNode = (worldMesh, object) => {
             updateMsg.vertexNormals = vertexNormals;
         }
     }
-    if (Object.keys(updateMsg).length > 0) {
+    const fieldsUpdated = Object.keys(updateMsg).length;
+    if (fieldsUpdated > 0 && !(fieldsUpdated === 1 && fieldsUpdated[0] === 'vertexPositions')) {
         publishMsg({uid, action: 'update', ...updateMsg});
     }
 };
