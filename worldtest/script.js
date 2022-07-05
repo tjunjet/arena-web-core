@@ -6,11 +6,18 @@ using low level hit testing, and fall back to this method if the user declines t
 real world geometry access.
 */
 
+/* global ARENADefaults */
+
 // some dependencies and utilities
 import * as mat4 from './libs/gl-matrix/mat4.js';
 import * as vec3 from './libs/gl-matrix/vec3.js';
 
 import XREngine from './XREngine.js';
+
+import {ARENAUserAccount} from '/build/arena-account.js';
+import MqttClient from '/build/mqtt-client.js';
+
+const hitTestEnabled = false;
 
 let session = null;
 let localReferenceSpace = null;
@@ -46,6 +53,8 @@ let directionalLight = null;
 
 const goButton = document.getElementById('go-button');
 
+let pubsub;
+
 const initXR = () => {
     if (navigator.xr) {
         navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
@@ -55,6 +64,36 @@ const initXR = () => {
             } else {
                 goButton.initText = 'No WebXR AR support';
             }
+        });
+        window.addEventListener('onauth', async function(e) {
+            const authState = await ARENAUserAccount.userAuthState();
+            const pubName = `${e.detail.mqtt_username}_${new Date().getMilliseconds()}`;
+            console.info('Authed:', authState);
+            pubsub = {
+                mqttUri: ARENADefaults ? `wss://${ARENADefaults.mqttHost}/mqtt/` : 'wss://'+ location.hostname + (location.port ? ':' + location.port : '') + '/mqtt/',
+                authState,
+                mqttUsername: e.detail.mqtt_username,
+                mqttToken: e.detail.mqtt_token,
+                publishTopic: `realm/s/public/worldmap/scene_geometry_${pubName}`,
+            };
+            // start mqtt client
+            pubsub.mc = new MqttClient({
+                uri: pubsub.mqttUri,
+                mqtt_username: pubsub.mqttUsername,
+                mqtt_token: pubsub.mqttToken,
+                dbg: true,
+            });
+            console.info('Starting connection to ' + pubsub.mqttUri + '...');
+
+            try {
+                await pubsub.mc.connect();
+            } catch (error) {
+                console.error(error); // Failure!
+                return;
+            }
+
+            pubsub.mqttConnected = true;
+            console.info('Connected.');
         });
     } else {
         goButton.initText = 'No WebXR support';
@@ -114,9 +153,12 @@ const initSession = async (xrSession) => {
     });
 
     // initialize hit test source at center
-    session.requestHitTestSource({space: viewerReferenceSpace}).then((xrHitTestSource) => {
-        hitTestSource = xrHitTestSource;
-    });
+    if (hitTestEnabled) {
+        session.requestHitTestSource({space: viewerReferenceSpace}).
+            then((xrHitTestSource) => {
+                hitTestSource = xrHitTestSource;
+            });
+    }
 
     // initialize world sensing
     session.updateWorldSensingState({
@@ -153,7 +195,9 @@ const initSession = async (xrSession) => {
 };
 
 const onSessionEnd = (event) => {
-    clearHitTestSource();
+    if (hitTestEnabled) {
+        clearHitTestSource();
+    }
     session = null;
     inputSource = null;
     viewerReferenceSpace = null;
@@ -221,52 +265,62 @@ const handleUpdateNode = (worldMesh, object) => {
         return;
     }
 
+    const {uid, triangleIndices, vertexPositions, textureCoordinates, vertexNormals} = worldMesh;
+    let updateMsg = {uid, action: 'update'};
+
     if (worldMesh.vertexCountChanged) {
         const newMesh = newMeshNode(worldMesh);
         object.threeMesh.geometry.dispose();
         object.node.remove(object.threeMesh);
         object.node.add(newMesh);
         object.threeMesh = newMesh;
+        updateMsg = {...updateMsg, triangleIndices, vertexPositions, vertexNormals};
     } else {
         if (worldMesh.vertexPositionsChanged) {
             const position = object.threeMesh.geometry.attributes.position;
-            if (position.array.length !== worldMesh.vertexPositions.length) {
+            if (position.array.length !== vertexPositions.length) {
                 console.error('position and vertex arrays are different sizes', position, worldMesh);
             }
-            position.setArray(worldMesh.vertexPositions);
+            position.setArray(vertexPositions);
             position.needsUpdate = true;
+            updateMsg[vertexPositions] = vertexPositions;
         }
         if (worldMesh.textureCoordinatesChanged) {
             const uv = object.threeMesh.geometry.attributes.uv;
-            if (uv.array.length !== worldMesh.textureCoordinates.length) {
+            if (uv.array.length !== textureCoordinates.length) {
                 console.error('uv and vertex arrays are different sizes', uv, worldMesh);
             }
-            uv.setArray(worldMesh.textureCoordinates);
+            uv.setArray(textureCoordinates);
             uv.needsUpdate = true;
+            updateMsg[textureCoordinates] = textureCoordinates;
         }
         if (worldMesh.triangleIndicesChanged) {
             const index = object.threeMesh.geometry.index;
-            if (index.array.length !== worldMesh.triangleIndices) {
+            if (index.array.length !== triangleIndices) {
                 console.error('uv and vertex arrays are different sizes', index, worldMesh);
             }
-            index.setArray(worldMesh.triangleIndices);
+            index.setArray(triangleIndices);
             index.needsUpdate = true;
+            updateMsg[triangleIndices] = triangleIndices;
         }
-        if (worldMesh.vertexNormalsChanged && worldMesh.vertexNormals.length > 0) {
+        if (worldMesh.vertexNormalsChanged && vertexNormals.length > 0) {
             // normals are optional
             const normals = object.threeMesh.geometry.attributes.normals;
-            if (normals.array.length != worldMesh.vertexNormals) {
+            if (normals.array.length !== vertexNormals) {
                 console.error('uv and vertex arrays are different sizes', normals, worldMesh);
             }
-            normals.setArray(worldMesh.vertexNormals);
+            normals.setArray(vertexNormals);
             normals.needsUpdate = true;
+            updateMsg[vertexNormals] = vertexNormals;
         }
     }
+    publishMsg(updateMsg);
 };
 
 const handleRemoveNode = (object) => {
     object.threeMesh.geometry.dispose();
     engine.removeAnchoredNode(object.node);
+    publishMsg({uid: object.worldMesh.uid, action: 'delete'});
     meshMap.delete(object.worldMesh.uid);
 };
 
@@ -305,20 +359,22 @@ const newMeshNode = (worldMesh) => {
     const mesh = new THREE.Group();
     const geometry = new THREE.BufferGeometry();
 
-    const indices = new THREE.BufferAttribute(worldMesh.triangleIndices, 1);
+    const {uid, triangleIndices, vertexPositions, textureCoordinates, vertexNormals} = worldMesh;
+
+    const indices = new THREE.BufferAttribute(triangleIndices, 1);
     indices.dynamic = true;
     geometry.setIndex(indices);
 
-    const verticesBufferAttribute = new THREE.BufferAttribute(worldMesh.vertexPositions, 3);
+    const verticesBufferAttribute = new THREE.BufferAttribute(vertexPositions, 3);
     verticesBufferAttribute.dynamic = true;
     geometry.addAttribute('position', verticesBufferAttribute);
 
-    const uvBufferAttribute = new THREE.BufferAttribute(worldMesh.textureCoordinates, 2);
+    const uvBufferAttribute = new THREE.BufferAttribute(textureCoordinates, 2);
     uvBufferAttribute.dynamic = true;
     geometry.addAttribute('uv', uvBufferAttribute);
 
     if (worldMesh.vertexNormals.length > 0) {
-        const normalsBufferAttribute = new THREE.BufferAttribute(worldMesh.vertexNormals, 3);
+        const normalsBufferAttribute = new THREE.BufferAttribute(vertexNormals, 3);
         normalsBufferAttribute.dynamic = true;
         geometry.addAttribute('normal', normalsBufferAttribute);
     } else {
@@ -335,6 +391,9 @@ const newMeshNode = (worldMesh) => {
     mesh.geometry = geometry; // for later use
 
     // worldMesh.mesh = mesh;
+
+    publishMsg({uid, action: 'create', triangleIndices, vertexPositions, vertexNormals});
+
     return mesh;
 };
 
@@ -370,7 +429,7 @@ const handleAnimationFrame = (t, frame) => {
 
     // Create HitTest Source. Calculating offset ray from the relative transform
     // between viewerPose and inputPose so we need to do in animation frame.
-    if (isSelecting && inputSource) {
+    if (hitTestEnabled && isSelecting && inputSource) {
         const inputPose = frame.getPose(inputSource.targetRaySpace, localReferenceSpace);
         const offsetRay = createOffsetRay(viewerPose, inputPose);
         clearHitTestSource();
@@ -380,7 +439,7 @@ const handleAnimationFrame = (t, frame) => {
         isSelecting = false;
     }
 
-    if (hitTestSource) {
+    if (hitTestEnabled && hitTestSource) {
         const results = frame.getHitTestResults(hitTestSource);
         if (results.length > 0) {
             const result = results[0];
@@ -408,6 +467,11 @@ const handleAnimationFrame = (t, frame) => {
         engine.render();
     }
     engine.endFrame();
+};
+
+const publishMsg = (msg) => {
+    const jsonMsg = JSON.stringify(msg);
+    pubsub.mc.publish(pubsub.publishTopic, jsonMsg);
 };
 
 initXR();
