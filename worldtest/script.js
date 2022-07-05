@@ -314,8 +314,8 @@ const handleUpdateNode = (worldMesh, object) => {
             updateMsg.vertexNormals = vertexNormals;
         }
     }
-    const fieldsUpdated = Object.keys(updateMsg).length;
-    if (fieldsUpdated > 0 && !(fieldsUpdated === 1 && fieldsUpdated[0] === 'vertexPositions')) {
+    const fieldsUpdated = Object.keys(updateMsg);
+    if (fieldsUpdated.length > 0 && !(fieldsUpdated.length === 1 && fieldsUpdated[0] === 'vertexPositions')) {
         publishMsg({uid, action: 'update', ...updateMsg});
     }
 };
