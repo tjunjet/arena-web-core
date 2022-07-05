@@ -266,7 +266,7 @@ const handleUpdateNode = (worldMesh, object) => {
     }
 
     const {uid, triangleIndices, vertexPositions, textureCoordinates, vertexNormals} = worldMesh;
-    let updateMsg = {uid, action: 'update'};
+    let updateMsg = {};
 
     if (worldMesh.vertexCountChanged) {
         const newMesh = newMeshNode(worldMesh);
@@ -314,7 +314,9 @@ const handleUpdateNode = (worldMesh, object) => {
             updateMsg[vertexNormals] = vertexNormals;
         }
     }
-    publishMsg(updateMsg);
+    if (Object.keys(updateMsg).length > 0) {
+        publishMsg({uid, action: 'update', ...updateMsg});
+    }
 };
 
 const handleRemoveNode = (object) => {
