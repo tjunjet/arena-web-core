@@ -283,7 +283,7 @@ const handleUpdateNode = (worldMesh, object) => {
             }
             position.setArray(vertexPositions);
             position.needsUpdate = true;
-            updateMsg.vertexPositions = vertexPositions;
+            // updateMsg.vertexPositions = vertexPositions;
         }
         if (worldMesh.textureCoordinatesChanged) {
             const uv = object.threeMesh.geometry.attributes.uv;
