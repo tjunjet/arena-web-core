@@ -274,7 +274,7 @@ const handleUpdateNode = (worldMesh, object) => {
         object.node.remove(object.threeMesh);
         object.node.add(newMesh);
         object.threeMesh = newMesh;
-        updateMsg = {...updateMsg, triangleIndices, vertexPositions, vertexNormals};
+        updateMsg = {triangleIndices, vertexPositions, vertexNormals};
     } else {
         if (worldMesh.vertexPositionsChanged) {
             const position = object.threeMesh.geometry.attributes.position;
@@ -283,7 +283,7 @@ const handleUpdateNode = (worldMesh, object) => {
             }
             position.setArray(vertexPositions);
             position.needsUpdate = true;
-            updateMsg[vertexPositions] = vertexPositions;
+            updateMsg.vertexPositions = vertexPositions;
         }
         if (worldMesh.textureCoordinatesChanged) {
             const uv = object.threeMesh.geometry.attributes.uv;
@@ -292,7 +292,7 @@ const handleUpdateNode = (worldMesh, object) => {
             }
             uv.setArray(textureCoordinates);
             uv.needsUpdate = true;
-            updateMsg[textureCoordinates] = textureCoordinates;
+            updateMsg.textureCoordinates = textureCoordinates;
         }
         if (worldMesh.triangleIndicesChanged) {
             const index = object.threeMesh.geometry.index;
@@ -301,7 +301,7 @@ const handleUpdateNode = (worldMesh, object) => {
             }
             index.setArray(triangleIndices);
             index.needsUpdate = true;
-            updateMsg[triangleIndices] = triangleIndices;
+            updateMsg.triangleIndices = triangleIndices;
         }
         if (worldMesh.vertexNormalsChanged && vertexNormals.length > 0) {
             // normals are optional
@@ -311,7 +311,7 @@ const handleUpdateNode = (worldMesh, object) => {
             }
             normals.setArray(vertexNormals);
             normals.needsUpdate = true;
-            updateMsg[vertexNormals] = vertexNormals;
+            updateMsg.vertexNormals = vertexNormals;
         }
     }
     if (Object.keys(updateMsg).length > 0) {
