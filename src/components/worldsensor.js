@@ -8,7 +8,6 @@
 
 AFRAME.registerComponent('world-sensor', {
     schema: {
-        updateRate: {type: 'number', default: 1000},
         enabled: {type: 'boolean', default: true},
     },
     init: function() {
@@ -60,7 +59,6 @@ AFRAME.registerComponent('world-sensor', {
         } else {
             // TODO: Chrome WebXR Plane Detection API
         }
-        this.tick = AFRAME.utils.throttleTick(this.tick, this.data.updateRate, this);
     },
     handleAnimationFrame: function(t, xrFrame) {
         if (!this.session || this.session.ended) return;
