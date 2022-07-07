@@ -19,16 +19,14 @@ AFRAME.registerComponent('world-sensor', {
 
         if (isWebXRViewer) {
             // request worldsense access features
-            const sceneEl = this.el;
-            const optionalFeatures = sceneEl.systems.webxr.data.optionalFeatures;
-            optionalFeatures.push('worldSensing'); // request custom 'computerVision' feature in WebXRViewer/WebARViewer
-            sceneEl.systems.webxr.sceneEl.setAttribute(
-                'optionalFeatures',
-                optionalFeatures,
-            );
-
             const self = this;
             const scene = this.el.sceneEl;
+            const optionalFeatures = scene.getAttribute('optionalFeatures');
+            scene.setAttribute(
+                'optionalFeatures',
+                optionalFeatures + ',worldSensing',
+            );
+
             scene.addEventListener('enter-vr', async function() {
                 if (scene.is('ar-mode')) {
                     self.reporting = true;
