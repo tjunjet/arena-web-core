@@ -61,7 +61,7 @@ AFRAME.registerComponent('world-sensor', {
     handleAnimationFrame: function(t, xrFrame) {
         if (!this.session || this.session.ended) return;
 
-        this.session.requestAnimationFrame(this.handleAnimationFrame);
+        this.session.requestAnimationFrame(this.handleAnimationFrame.bind(this));
 
         const viewerPose = xrFrame.getViewerPose(this.localReferenceSpace);
         if (!viewerPose) {
