@@ -125,8 +125,8 @@ AFRAME.registerComponent('world-sensor', {
                 if (position.array.length !== vertexPositions.length) {
                     console.error('position and vertex arrays are different sizes', position, worldMesh);
                 }
-                // position.setArray(vertexPositions);
-                object.threeMesh.geometry.setAttribute('position', vertexPositions);
+                position.set(vertexPositions);
+                // object.threeMesh.geometry.setAttribute('position', vertexPositions);
                 position.needsUpdate = true;
                 updateMsg.vertexPositions = vertexPositions;
             }
@@ -135,8 +135,8 @@ AFRAME.registerComponent('world-sensor', {
                 if (uv.array.length !== textureCoordinates.length) {
                     console.error('uv and vertex arrays are different sizes', uv, worldMesh);
                 }
-                // uv.setArray(textureCoordinates);
-                object.threeMesh.geometry.setAttribute('uv', textureCoordinates);
+                uv.set(textureCoordinates);
+                // object.threeMesh.geometry.setAttribute('uv', textureCoordinates);
                 uv.needsUpdate = true;
                 updateMsg.textureCoordinates = textureCoordinates;
             }
@@ -156,8 +156,8 @@ AFRAME.registerComponent('world-sensor', {
                 if (normals.array.length !== vertexNormals) {
                     console.error('uv and vertex arrays are different sizes', normals, worldMesh);
                 }
-                // normals.setArray(vertexNormals);
-                object.threeMesh.geometry.setAttribute('normals', vertexNormals);
+                normals.set(vertexNormals);
+                // object.threeMesh.geometry.setAttribute('normals', vertexNormals);
                 normals.needsUpdate = true;
                 updateMsg.vertexNormals = vertexNormals;
             }
