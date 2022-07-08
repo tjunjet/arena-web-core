@@ -146,7 +146,7 @@ AFRAME.registerComponent('world-sensor', {
                     console.error('uv and vertex arrays are different sizes', index, worldMesh);
                 }
                 // index.setArray(triangleIndices);
-                object.threeMesh.geometry.setAttribute('index', triangleIndices);
+                object.threeMesh.geometry.setIndex(triangleIndices);
                 index.needsUpdate = true;
                 updateMsg.triangleIndices = triangleIndices;
             }
