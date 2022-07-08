@@ -32,17 +32,27 @@ AFRAME.registerComponent('world-sensor', {
                     self.reporting = true;
                     self.session = scene.renderer.xr.getSession();
                     // TODO: Add custom referencespace after relocalization
-                    self.localReferenceSpace = await self.session.requestReferenceSpace('local');
-                    self.viewerReferenceSpace = await self.session.requestReferenceSpace('viewer');
+                    // self.localReferenceSpace = await self.session.requestReferenceSpace('local-floor');
+                    // self.viewerReferenceSpace = await self.session.requestReferenceSpace('viewer');
 
-                    self.workingMatrix = new THREE.Matrix4();
+                    // self.workingMatrix = new THREE.Matrix4();
 
                     self.session.requestAnimationFrame(async (t, xrFrame) => {
-                        self.workingMatrix.copyPosition(
-                            xrFrame.getPose(self.localReferenceSpace, self.viewerReferenceSpace).transform.matrix,
-                        );
+                        // self.workingMatrix.copyPosition(
+                        //     xrFrame.getPose(self.localReferenceSpace, self.viewerReferenceSpace).transform.matrix,
+                        // );
+                        //
+                        // await xrFrame.addAnchor(self.workingMatrix, self.localReferenceSpace);
 
-                        await xrFrame.addAnchor(self.workingMatrix, self.localReferenceSpace);
+                        self.session.updateWorldSensingState({
+                            illuminationDetectionState: {
+                                enabled: true,
+                            },
+                            meshDetectionState: {
+                                enabled: true,
+                                normals: true,
+                            },
+                        });
 
                         self.session.requestAnimationFrame(self.handleAnimationFrame.bind(self));
                     });
@@ -51,8 +61,8 @@ AFRAME.registerComponent('world-sensor', {
             scene.addEventListener('exit-vr', function() {
                 self.session = undefined;
                 self.reporting = false;
-                self.viewerReferenceSpace = null;
-                self.localReferenceSpace = null;
+                // self.viewerReferenceSpace = null;
+                // self.localReferenceSpace = null;
             });
         } else {
             // TODO: Chrome WebXR Plane Detection API
@@ -63,12 +73,12 @@ AFRAME.registerComponent('world-sensor', {
 
         this.session.requestAnimationFrame(this.handleAnimationFrame.bind(this));
 
-        const viewerPose = xrFrame.getViewerPose(this.localReferenceSpace);
-        if (!viewerPose) {
-            console.log('No viewer pose');
-            return;
-        }
-        const worldInfo = frame.worldInformation;
+        // const viewerPose = xrFrame.getViewerPose(this.localReferenceSpace);
+        // if (!viewerPose) {
+        //     console.log('No viewer pose');
+        //     return;
+        // }
+        const worldInfo = xrFrame.worldInformation;
 
         if (worldInfo.meshes) {
             // this.meshMap.forEach(object => { object.seen = false }); // Persist
