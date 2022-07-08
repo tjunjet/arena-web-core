@@ -125,7 +125,8 @@ AFRAME.registerComponent('world-sensor', {
                 if (position.array.length !== vertexPositions.length) {
                     console.error('position and vertex arrays are different sizes', position, worldMesh);
                 }
-                position.setArray(vertexPositions);
+                // position.setArray(vertexPositions);
+                object.threeMesh.geometry.setAttribute('position', vertexPositions);
                 position.needsUpdate = true;
                 updateMsg.vertexPositions = vertexPositions;
             }
@@ -134,7 +135,8 @@ AFRAME.registerComponent('world-sensor', {
                 if (uv.array.length !== textureCoordinates.length) {
                     console.error('uv and vertex arrays are different sizes', uv, worldMesh);
                 }
-                uv.setArray(textureCoordinates);
+                // uv.setArray(textureCoordinates);
+                object.threeMesh.geometry.setAttribute('uv', textureCoordinates);
                 uv.needsUpdate = true;
                 updateMsg.textureCoordinates = textureCoordinates;
             }
@@ -143,7 +145,8 @@ AFRAME.registerComponent('world-sensor', {
                 if (index.array.length !== triangleIndices) {
                     console.error('uv and vertex arrays are different sizes', index, worldMesh);
                 }
-                index.setArray(triangleIndices);
+                // index.setArray(triangleIndices);
+                object.threeMesh.geometry.setAttribute('index', triangleIndices);
                 index.needsUpdate = true;
                 updateMsg.triangleIndices = triangleIndices;
             }
@@ -153,7 +156,8 @@ AFRAME.registerComponent('world-sensor', {
                 if (normals.array.length !== vertexNormals) {
                     console.error('uv and vertex arrays are different sizes', normals, worldMesh);
                 }
-                normals.setArray(vertexNormals);
+                // normals.setArray(vertexNormals);
+                object.threeMesh.geometry.setAttribute('normals', vertexNormals);
                 normals.needsUpdate = true;
                 updateMsg.vertexNormals = vertexNormals;
             }
