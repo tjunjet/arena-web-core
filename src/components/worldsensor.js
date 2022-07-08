@@ -176,7 +176,7 @@ AFRAME.registerComponent('world-sensor', {
 
         worldMeshGroup.add(mesh);
 
-        const axesHelper = engine.createAxesHelper([0.1, 0.1, 0.1]);
+        const axesHelper = createAxesHelper([0.1, 0.1, 0.1]);
         worldMeshGroup.add(axesHelper);
 
         // worldMesh.node = worldMeshGroup;
@@ -200,21 +200,21 @@ AFRAME.registerComponent('world-sensor', {
         const {uid, triangleIndices, vertexPositions, textureCoordinates, vertexNormals} = worldMesh;
 
         const indices = new THREE.BufferAttribute(triangleIndices, 1);
-        indices.dynamic = true;
+        indices.setUsage(THREE.DynamicDrawUsage);
         geometry.setIndex(indices);
 
         const verticesBufferAttribute = new THREE.BufferAttribute(vertexPositions, 3);
-        verticesBufferAttribute.dynamic = true;
-        geometry.addAttribute('position', verticesBufferAttribute);
+        verticesBufferAttribute.setUsage(THREE.DynamicDrawUsage);
+        geometry.setAttribute('position', verticesBufferAttribute);
 
         const uvBufferAttribute = new THREE.BufferAttribute(textureCoordinates, 2);
-        uvBufferAttribute.dynamic = true;
-        geometry.addAttribute('uv', uvBufferAttribute);
+        uvBufferAttribute.setUsage(THREE.DynamicDrawUsage);
+        geometry.setAttribute('uv', uvBufferAttribute);
 
         if (worldMesh.vertexNormals.length > 0) {
             const normalsBufferAttribute = new THREE.BufferAttribute(vertexNormals, 3);
-            normalsBufferAttribute.dynamic = true;
-            geometry.addAttribute('normal', normalsBufferAttribute);
+            normalsBufferAttribute.setUsage(THREE.DynamicDrawUsage);
+            geometry.setAttribute('normal', normalsBufferAttribute);
         } else {
             geometry.computeVertexNormals();
         }
@@ -239,4 +239,27 @@ AFRAME.registerComponent('world-sensor', {
 const publishMsg = (msg) => {
     console.log(msg);
     ARENA.Mqtt.publish(`realm/s/public/worldmap/scene_geometry_${ARENA.userName}`, JSON.stringify(msg));
+};
+
+const createAxesHelper = (size=[1, 1, 1]) => {
+    const vertices = [
+        0, 0, 0,	size[0], 0, 0,
+        0, 0, 0,	0, size[1], 0,
+        0, 0, 0,	0, 0, size[2],
+    ];
+
+    const colors = [
+        1, 0, 0,	1, 0.6, 0,
+        0, 1, 0,	0.6, 1, 0,
+        0, 0, 1,	0, 0.6, 1,
+    ];
+
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+    geometry.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
+
+    const material = new THREE.LineBasicMaterial( {vertexColors: THREE.VertexColors} );
+
+    const helper = new THREE.LineSegments(geometry, material);
+    return helper;
 };
