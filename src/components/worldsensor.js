@@ -242,7 +242,7 @@ AFRAME.registerComponent('world-sensor', {
 
 const publishMsg = (msg) => {
     console.log(msg);
-    ARENA.Mqtt.publish(`realm/s/public/worldmap/scene_geometry_${ARENA.userName}`, JSON.stringify(msg));
+    ARENA.Mqtt.publish(`${ARENA.outputTopic}${ARENA.camName}/geometry`, JSON.stringify(msg));
 };
 
 const createAxesHelper = (size=[1, 1, 1]) => {
