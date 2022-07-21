@@ -14,7 +14,6 @@ import * as vec3 from './libs/gl-matrix/vec3.js';
 
 import XREngine from './XREngine.js';
 
-import {ARENAUserAccount} from '/build/arena-account.js';
 import MqttClient from '/build/mqtt-client.js';
 
 const hitTestEnabled = false;
@@ -55,7 +54,7 @@ const goButton = document.getElementById('go-button');
 
 let pubsub;
 
-const initXR = () => {
+const initXR = async () => {
     if (navigator.xr) {
         navigator.xr.isSessionSupported('immersive-ar').then((supported) => {
             if (supported) {
@@ -65,36 +64,36 @@ const initXR = () => {
                 goButton.initText = 'No WebXR AR support';
             }
         });
-        window.addEventListener('onauth', async function(e) {
-            const authState = await ARENAUserAccount.userAuthState();
-            const pubName = `${e.detail.mqtt_username}_${new Date().getMilliseconds()}`;
-            console.info('Authed:', authState);
-            pubsub = {
-                mqttUri: ARENADefaults ? `wss://${ARENADefaults.mqttHost}/mqtt/` : 'wss://'+ location.hostname + (location.port ? ':' + location.port : '') + '/mqtt/',
-                authState,
-                mqttUsername: e.detail.mqtt_username,
-                mqttToken: e.detail.mqtt_token,
-                publishTopic: `realm/s/public/worldmap/scene_geometry_${pubName}`,
-            };
-            // start mqtt client
-            pubsub.mc = new MqttClient({
-                uri: pubsub.mqttUri,
-                mqtt_username: pubsub.mqttUsername,
-                mqtt_token: pubsub.mqttToken,
-                dbg: true,
-            });
-            console.info('Starting connection to ' + pubsub.mqttUri + '...');
-
-            try {
-                await pubsub.mc.connect();
-            } catch (error) {
-                console.error(error); // Failure!
-                return;
-            }
-
-            pubsub.mqttConnected = true;
-            console.info('Connected.');
+        const authState = await requestMqttToken(
+            'anonymous',
+            `worldmapper_${Math.floor(100 + Math.random() * 10000)}`,
+            'public/worldmap',
+        );
+        console.info('Authed:', authState);
+        pubsub = {
+            mqttUri: ARENADefaults ? `wss://${ARENADefaults.mqttHost}/mqtt/` : 'wss://'+ location.hostname + (location.port ? ':' + location.port : '') + '/mqtt/',
+            authState,
+            mqttUsername: authState.username,
+            mqttToken: authState.token,
+            publishTopic: `realm/s/public/worldmap/${authState.ids.camid}/geometry`,
+        };
+        // start mqtt client
+        pubsub.mc = new MqttClient({
+            uri: pubsub.mqttUri,
+            mqtt_username: pubsub.mqttUsername,
+            mqtt_token: pubsub.mqttToken,
+            dbg: true,
         });
+        console.info('Starting connection to ' + pubsub.mqttUri + '...');
+
+        try {
+            await pubsub.mc.connect();
+        } catch (error) {
+            console.error(error); // Failure!
+            return;
+        }
+        pubsub.mqttConnected = true;
+        console.info('Connected.');
     } else {
         goButton.initText = 'No WebXR support';
     }
@@ -476,5 +475,61 @@ const publishMsg = (msg) => {
     const jsonMsg = JSON.stringify(msg);
     pubsub.mc.publish(pubsub.publishTopic, jsonMsg);
 };
+
+
+/**
+* Request token to auth service
+ * @param {string} authType authentication type
+ * @param {string} mqttUsername mqtt user name
+ * @param {string} sceneName namespaced scene name
+ * @return {object} auth result
+*/
+async function requestMqttToken(authType, mqttUsername, sceneName) {
+    let params = 'username=' + mqttUsername;
+    params += `&id_auth=${authType}`;
+    // provide user control topics for token construction
+    if (typeof defaults !== 'undefined') {
+        if (ARENADefaults.realm) {
+            params += `&realm=${ARENADefaults.realm}`;
+        }
+    }
+    params += `&scene=${sceneName}`;
+    params += `&userid=true`;
+    params += `&camid=true`;
+    params += `&handleftid=true`;
+    params += `&handrightid=true`;
+    const res = await fetch(`/user/mqtt_auth`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params,
+    });
+    return (await res.json());
+}
+
+
+/**
+ * Utility function to get cookie value
+ * @param {string} name cookie name
+ * @return {string} cookie value
+ */
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return '';
+}
+
 
 initXR();
