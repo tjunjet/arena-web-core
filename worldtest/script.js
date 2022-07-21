@@ -66,7 +66,7 @@ const initXR = async () => {
         });
         const authState = await requestMqttToken(
             'anonymous',
-            `worldmapper_${Math.floor(100 + Math.random() * 10000)}`,
+            `anonymous-worldmapper${Math.floor(100 + Math.random() * 10000)}`,
             'public/worldmap',
         );
         console.info('Authed:', authState);
