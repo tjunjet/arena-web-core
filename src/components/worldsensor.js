@@ -72,6 +72,7 @@ AFRAME.registerComponent('world-sensor', {
         }
         this.mapRoot = document.createElement('a-entity');
         this.mapRoot.setAttribute('id', 'ARMapRoot');
+        this.mapRoot.setAttribute('position', '0 1.6 0');
         document.querySelector('a-scene').appendChild(this.mapRoot);
     },
     handleAnimationFrame: function(t, xrFrame) {
