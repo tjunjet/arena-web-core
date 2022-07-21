@@ -8,7 +8,9 @@
 
 /* global AFRAME, ARENA */
 
-import {ARENAUtils} from '../utils.js';
+import {
+    ARENAUtils
+} from '../utils.js';
 
 /**
  * Tracking camera movement in real time. Emits camera pose change and VIO change events.
@@ -26,15 +28,42 @@ import {ARENAUtils} from '../utils.js';
  */
 AFRAME.registerComponent('arena-camera', {
     schema: {
-        enabled: {type: 'boolean', default: false},
-        vioEnabled: {type: 'boolean', default: false},
-        displayName: {type: 'string', default: 'No Name'},
-        color: {type: 'string', default: '#' + Math.floor(Math.random() * 16777215).toString(16)},
-        rotation: {type: 'vec4', default: new THREE.Quaternion()},
-        position: {type: 'vec3', default: new THREE.Vector3()},
-        vioRotation: {type: 'vec4', default: new THREE.Quaternion()},
-        vioPosition: {type: 'vec3', default: new THREE.Vector3()},
-        showStats: {type: 'boolean', default: false},
+        enabled: {
+            type: 'boolean',
+            default: false
+        },
+        vioEnabled: {
+            type: 'boolean',
+            default: false
+        },
+        displayName: {
+            type: 'string',
+            default: 'No Name'
+        },
+        color: {
+            type: 'string',
+            default: '#' + Math.floor(Math.random() * 16777215).toString(16)
+        },
+        rotation: {
+            type: 'vec4',
+            default: new THREE.Quaternion()
+        },
+        position: {
+            type: 'vec3',
+            default: new THREE.Vector3()
+        },
+        vioRotation: {
+            type: 'vec4',
+            default: new THREE.Quaternion()
+        },
+        vioPosition: {
+            type: 'vec3',
+            default: new THREE.Vector3()
+        },
+        showStats: {
+            type: 'boolean',
+            default: false
+        },
     },
     /**
      * Send initial camera create message; Setup heartbeat timer
@@ -134,8 +163,37 @@ AFRAME.registerComponent('arena-camera', {
             msg.data.headModelPath = ARENA.defaults.headModelPath;
         }
 
+
+        const pm = document.getElementById('my-camera').components.camera.camera.projectionMatrix;
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        const i = this.getCameraIntrinsics(w, h, pm.elements);
+
+        console.log('projectionMatrix', w, h, JSON.stringify(pm));
+        console.log('cameraIntrinsics',  JSON.stringify(i));
+
         ARENA.Mqtt.publish(`${ARENA.outputTopic}${ARENA.camName}`, msg); // extra timestamp info at end for debugging
     },
+
+    /**
+     * Compute camera intrinsics from a pre-defined projection matrix
+     * @return {object} - camera intrinsics object with camera's focal length (fx, fy),
+     *                    principal point (cx, cy) and gamma
+     * @private
+     */
+    getCameraIntrinsics(frameWidth, frameHeight, projectionMatrix) {
+        return {
+            // Focal lengths in pixels (these are equal for square pixels)
+            fx: (frameWidth / 2) * projectionMatrix[0],
+            fy: (frameHeight / 2) * projectionMatrix[5],
+            // Principal point in pixels (typically at or near the center of the viewport)
+            cx: ((1 - projectionMatrix[8]) * frameWidth) / 2,
+            cy: ((1 - projectionMatrix[9]) * frameHeight) / 2,
+            // Skew factor in pixels (nonzero for rhomboid pixels)
+            gamma: (frameWidth / 2) * projectionMatrix[4],
+        };
+    },
+
     /**
      * Publish user VIO
      * @param {string} action One of 'update' or 'create' actions sent in the publish message
