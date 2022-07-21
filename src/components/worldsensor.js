@@ -12,11 +12,10 @@ AFRAME.registerComponent('world-sensor', {
     },
     init: function() {
         this.worldMap = undefined;
-        this.reporting = false;
         this.session= undefined;
         this.meshMap = new Map();
         const isWebXRViewer = navigator.userAgent.includes('WebXRViewer');
-
+        this.createMapRoot();
         if (isWebXRViewer) {
             // request worldsense access features
             const self = this;
@@ -29,7 +28,6 @@ AFRAME.registerComponent('world-sensor', {
 
             scene.addEventListener('enter-vr', async function() {
                 if (scene.is('ar-mode')) {
-                    self.reporting = true;
                     self.session = scene.renderer.xr.getSession();
                     // TODO: Add custom referencespace after relocalization
                     // self.localReferenceSpace = await self.session.requestReferenceSpace('local-floor');
@@ -60,13 +58,21 @@ AFRAME.registerComponent('world-sensor', {
             });
             scene.addEventListener('exit-vr', function() {
                 self.session = undefined;
-                self.reporting = false;
+                self.createMapRoot();
                 // self.viewerReferenceSpace = null;
                 // self.localReferenceSpace = null;
             });
         } else {
             // TODO: Chrome WebXR Plane Detection API
         }
+    },
+    createMapRoot: function() {
+        if (this.mapRoot) {
+            this.mapRoot.parentElement.removeChild(this.mapRoot);
+        }
+        this.mapRoot = document.createElement('a-entity');
+        this.mapRoot.setAttribute('id', 'ARMapRoot');
+        document.querySelector('a-scene').appendChild(this.mapRoot);
     },
     handleAnimationFrame: function(t, xrFrame) {
         if (!this.session || this.session.ended) return;
@@ -172,6 +178,7 @@ AFRAME.registerComponent('world-sensor', {
         object.threeMesh.geometry.dispose();
         publishMsg({uid: object.worldMesh.uid, action: 'delete'});
         this.meshMap.delete(object.worldMesh.uid);
+        this.mapRoot.removeChild(document.getElementById(object.worldMesh.uid));
     },
 
     handleNewNode: function(worldMesh) {
@@ -184,6 +191,7 @@ AFRAME.registerComponent('world-sensor', {
         worldMeshGroup.add(axesHelper);
 
         // worldMesh.node = worldMeshGroup;
+        const object3D = this.addPlane(worldMesh, worldMeshGroup);
 
         this.meshMap.set(worldMesh.uid, {
             ts: worldMesh.timeStamp,
@@ -191,7 +199,28 @@ AFRAME.registerComponent('world-sensor', {
             node: worldMeshGroup,
             seen: true,
             threeMesh: mesh,
+            object3D,
         });
+    },
+
+    // called with (worldmesh, worldmeshgroup)
+    addPlane: function(worldMesh, group) {
+        if (!worldMesh || !worldMesh.uid) {
+            console.error('not a valid plane mesh', worldMesh);
+            return;
+        }
+
+        const anchorEl = document.createElement('a-entity');
+        anchorEl.setAttribute('id', worldMesh.uid);
+        this.mapRoot.append(anchorEl);
+
+        group.anchor = worldMesh;
+        group.matrixAutoUpdate = false;
+        group.matrix.fromArray(worldMesh.modelMatrix);
+        group.updateMatrixWorld(true);
+        anchorEl.object3D = group;
+
+        return group;
     },
 
     newMeshNode: function(worldMesh) {
