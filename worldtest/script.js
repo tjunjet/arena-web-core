@@ -264,7 +264,7 @@ const handleUpdateNode = (worldMesh, object) => {
         return;
     }
 
-    const {uid, triangleIndices, vertexPositions, textureCoordinates, vertexNormals} = worldMesh;
+    const {uid, triangleIndices, vertexPositions, textureCoordinates, vertexNormals, modelMatrix} = worldMesh;
     let updateMsg = {};
 
     if (worldMesh.vertexCountChanged) {
@@ -273,7 +273,7 @@ const handleUpdateNode = (worldMesh, object) => {
         object.node.remove(object.threeMesh);
         object.node.add(newMesh);
         object.threeMesh = newMesh;
-        updateMsg = {triangleIndices, vertexPositions, vertexNormals};
+        updateMsg = {triangleIndices, vertexPositions, modelMatrix};
     } else {
         if (worldMesh.vertexPositionsChanged) {
             const position = object.threeMesh.geometry.attributes.position;
@@ -310,12 +310,11 @@ const handleUpdateNode = (worldMesh, object) => {
             }
             normals.setArray(vertexNormals);
             normals.needsUpdate = true;
-            updateMsg.vertexNormals = vertexNormals;
         }
     }
     const fieldsUpdated = Object.keys(updateMsg);
     if (fieldsUpdated.length > 0 && !(fieldsUpdated.length === 1 && fieldsUpdated[0] === 'vertexPositions')) {
-        publishMsg({uid, action: 'update', ...updateMsg});
+        publishMsg({uid, action: 'update', modelMatrix, ...updateMsg});
     }
 };
 
@@ -361,7 +360,7 @@ const newMeshNode = (worldMesh) => {
     const mesh = new THREE.Group();
     const geometry = new THREE.BufferGeometry();
 
-    const {uid, triangleIndices, vertexPositions, textureCoordinates, vertexNormals} = worldMesh;
+    const {uid, triangleIndices, vertexPositions, textureCoordinates, vertexNormals, modelMatrix} = worldMesh;
 
     const indices = new THREE.BufferAttribute(triangleIndices, 1);
     indices.dynamic = true;
@@ -394,7 +393,7 @@ const newMeshNode = (worldMesh) => {
 
     // worldMesh.mesh = mesh;
 
-    publishMsg({uid, action: 'create', triangleIndices, vertexPositions, vertexNormals});
+    publishMsg({uid, action: 'create', triangleIndices, vertexPositions, modelMatrix});
 
     return mesh;
 };
