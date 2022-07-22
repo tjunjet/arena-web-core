@@ -37,6 +37,7 @@ import './threejs-scene.js';
 import './ttl.js';
 import './ui';
 import './video-control.js';
+import './worldsensor.js';
 
 /**
  * Additional A-Frame components and systems
