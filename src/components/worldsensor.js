@@ -116,7 +116,7 @@ AFRAME.registerComponent('world-sensor', {
             return;
         }
 
-        const {uid, triangleIndices, vertexPositions, textureCoordinates, vertexNormals} = worldMesh;
+        const {uid, triangleIndices, vertexPositions, textureCoordinates, vertexNormals, modelMatrix} = worldMesh;
         let updateMsg = {};
 
         if (worldMesh.vertexCountChanged) {
@@ -125,7 +125,7 @@ AFRAME.registerComponent('world-sensor', {
             object.node.remove(object.threeMesh);
             object.node.add(newMesh);
             object.threeMesh = newMesh;
-            updateMsg = {triangleIndices, vertexPositions, vertexNormals};
+            updateMsg = {triangleIndices, vertexPositions, modelMatrix};
         } else {
             if (worldMesh.vertexPositionsChanged) {
                 const position = object.threeMesh.geometry.attributes.position;
@@ -166,12 +166,11 @@ AFRAME.registerComponent('world-sensor', {
                 normals.set(vertexNormals);
                 // object.threeMesh.geometry.setAttribute('normals', vertexNormals);
                 normals.needsUpdate = true;
-                updateMsg.vertexNormals = vertexNormals;
             }
         }
         const fieldsUpdated = Object.keys(updateMsg);
         if (fieldsUpdated.length > 0 && !(fieldsUpdated.length === 1 && fieldsUpdated[0] === 'vertexPositions')) {
-            publishMsg({uid, action: 'update', ...updateMsg});
+            publishMsg({uid, action: 'update', modelMatrix, ...updateMsg});
         }
     },
 
@@ -192,7 +191,7 @@ AFRAME.registerComponent('world-sensor', {
         worldMeshGroup.add(axesHelper);
 
         // worldMesh.node = worldMeshGroup;
-        const object3D = this.addPlane(worldMesh, worldMeshGroup);
+        this.addPlane(worldMesh, worldMeshGroup);
 
         this.meshMap.set(worldMesh.uid, {
             ts: worldMesh.timeStamp,
@@ -200,7 +199,6 @@ AFRAME.registerComponent('world-sensor', {
             node: worldMeshGroup,
             seen: true,
             threeMesh: mesh,
-            object3D,
         });
     },
 
@@ -231,7 +229,14 @@ AFRAME.registerComponent('world-sensor', {
         const mesh = new THREE.Group();
         const geometry = new THREE.BufferGeometry();
 
-        const {uid, triangleIndices, vertexPositions, textureCoordinates, vertexNormals} = worldMesh;
+        const {
+            uid,
+            triangleIndices,
+            vertexPositions,
+            textureCoordinates,
+            vertexNormals,
+            modelMatrix,
+        } = worldMesh;
 
         const indices = new THREE.BufferAttribute(triangleIndices, 1);
         indices.setUsage(THREE.DynamicDrawUsage);
@@ -264,7 +269,7 @@ AFRAME.registerComponent('world-sensor', {
 
         // worldMesh.mesh = mesh;
 
-        publishMsg({uid, action: 'create', triangleIndices, vertexPositions, vertexNormals});
+        publishMsg({uid, action: 'create', triangleIndices, vertexPositions, modelMatrix});
 
         return mesh;
     },
