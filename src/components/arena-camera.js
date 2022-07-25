@@ -8,9 +8,7 @@
 
 /* global AFRAME, ARENA */
 
-import {
-    ARENAUtils
-} from '../utils.js';
+import {ARENAUtils} from '../utils.js';
 
 /**
  * Tracking camera movement in real time. Emits camera pose change and VIO change events.
@@ -28,42 +26,15 @@ import {
  */
 AFRAME.registerComponent('arena-camera', {
     schema: {
-        enabled: {
-            type: 'boolean',
-            default: false
-        },
-        vioEnabled: {
-            type: 'boolean',
-            default: false
-        },
-        displayName: {
-            type: 'string',
-            default: 'No Name'
-        },
-        color: {
-            type: 'string',
-            default: '#' + Math.floor(Math.random() * 16777215).toString(16)
-        },
-        rotation: {
-            type: 'vec4',
-            default: new THREE.Quaternion()
-        },
-        position: {
-            type: 'vec3',
-            default: new THREE.Vector3()
-        },
-        vioRotation: {
-            type: 'vec4',
-            default: new THREE.Quaternion()
-        },
-        vioPosition: {
-            type: 'vec3',
-            default: new THREE.Vector3()
-        },
-        showStats: {
-            type: 'boolean',
-            default: false
-        },
+        enabled: {type: 'boolean', default: false},
+        vioEnabled: {type: 'boolean', default: false},
+        displayName: {type: 'string', default: 'No Name'},
+        color: {type: 'string', default: '#' + Math.floor(Math.random() * 16777215).toString(16)},
+        rotation: {type: 'vec4', default: new THREE.Quaternion()},
+        position: {type: 'vec3', default: new THREE.Vector3()},
+        vioRotation: {type: 'vec4', default: new THREE.Quaternion()},
+        vioPosition: {type: 'vec3', default: new THREE.Vector3()},
+        showStats: {type: 'boolean', default: false},
     },
     /**
      * Send initial camera create message; Setup heartbeat timer
