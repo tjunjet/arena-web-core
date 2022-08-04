@@ -153,6 +153,7 @@
         <!-- Vive controller 3d model -->
         <a-asset-item id="viveControl-obj" src="static/models/hands/vr_controller_vive.obj"></a-asset-item>
         <a-asset-item id="viveControl-mtl" src="static/models/hands/vr_controller_vive.mtl"></a-asset-item>
+        <a-asset-item id="ui-model" src="static/models/ui/ui-activator.glb"></a-asset-item>
     </a-assets>
 
     <a-entity id="sceneRoot">
@@ -171,6 +172,9 @@
                     <a-entity cursor="rayOrigin: mouse" id="mouse-cursor"
                               raycaster="objects:[click-listener],[click-listener-local]"></a-entity>
                 </a-camera>
+                <a-entity id="ui-tracker" ui-tracker position="0.25 1.7 0">
+                    <a-entity id="ui-activator" gltf-model="#ui-model" scale="0.5 0.5 0.5" position="0 0 -0.25" animation-mixer="clip:Cycling"></a-entity>
+                </a-entity>
             </a-entity>
             <a-entity arena-hand="hand:Left" blink-controls="cameraRig: #cameraRig; collisionEntities:[nav-mesh]" visible=false id="leftHand" obj-model="obj: #viveControl-obj; mtl: #viveControl-mtl" laser-controls="hand:left" raycaster="objects: [click-listener]"></a-entity>
             <a-entity arena-hand="hand:Right" visible=false id="rightHand" obj-model="obj: #viveControl-obj; mtl: #viveControl-mtl" laser-controls="hand:right" raycaster="objects: [click-listener]"></a-entity>
