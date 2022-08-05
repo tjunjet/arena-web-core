@@ -68,11 +68,7 @@ export class CreateUpdate {
             let addObj = false;
             if (!entityEl) {
                 // create object
-                if (message.data.object_type === 'videosphere'){
-                    entityEl = document.createElement('a-videosphere');
-                } else {
-                    entityEl = document.createElement('a-entity');
-                }
+                entityEl = document.createElement('a-entity');
                 entityEl.setAttribute('id', id);
                 // after setting object attributes, we will add it to the scene
                 addObj = true;
