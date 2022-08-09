@@ -173,7 +173,7 @@
                               raycaster="objects:[click-listener],[click-listener-local]"></a-entity>
                 </a-camera>
                 <a-entity id="ui-tracker" ui-tracker position="0.25 1.7 0">
-                    <a-entity id="ui-activator" gltf-model="#ui-model" scale="0.5 0.5 0.5" position="0 0 -0.25" animation-mixer="clip:Cycling"></a-entity>
+                    <a-entity id="ui-activator" gltf-model="#ui-model" scale="0.4 0.4 0.4" position="0 0 -0.25" animation-mixer="clip:Cycling" click-listener></a-entity>
                 </a-entity>
             </a-entity>
             <a-entity arena-hand="hand:Left" blink-controls="cameraRig: #cameraRig; collisionEntities:[nav-mesh]" visible=false id="leftHand" obj-model="obj: #viveControl-obj; mtl: #viveControl-mtl" laser-controls="hand:left" raycaster="objects: [click-listener]"></a-entity>

@@ -13,6 +13,8 @@ AFRAME.registerComponent('ui-tracker', {
         duration: {type: 'number', default: 750},
     },
     init: function() {
+        const self = this;
+
         this.camera = document.getElementById('my-camera');
         this.activationObject = this.el.children[0];
 
@@ -26,6 +28,16 @@ AFRAME.registerComponent('ui-tracker', {
         this.targetPosition = new THREE.Vector3();
         this.startRotation = new THREE.Quaternion();
         this.targetRotation = new THREE.Quaternion();
+
+        this.activationObject.addEventListener('mouseenter', function(evt) {
+            self.activationObject.object3D.scale.set(0.6, 0.6, 0.6);
+        });
+        this.activationObject.addEventListener('mouseleave', function(evt) {
+            self.activationObject.object3D.scale.set(0.4, 0.4, 0.4);
+        });
+        this.activationObject.addEventListener('mousedown', function(evt) {
+            //
+        });
     },
     tick: function() {
         if (this.data.enabled) {
