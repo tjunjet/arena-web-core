@@ -766,12 +766,12 @@ export class Arena {
                 });
             } else if (this.skipav) {
                 // Directly initialize Jitsi videoconferencing
-                this.Jitsi = ARENAJitsi.init(this.jitsiHost);
+                this.Jitsi = ARENAJitsi.init(this.jitsiHost, true);
             } else if (!this.noav && allowJitsi) {
                 window.setupAV(() => {
                     const pano = document.getElementById('presenceSelect').value == 'Panoramic';
                     // Initialize Jitsi videoconferencing after A/V setup window
-                    this.Jitsi = ARENAJitsi.init(this.jitsiHost, pano);
+                    this.Jitsi = ARENAJitsi.init(this.jitsiHost, true);
                 });
             }
 

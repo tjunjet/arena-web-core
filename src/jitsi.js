@@ -730,6 +730,7 @@ export class ARENAJitsi {
              * set video element size
              */
             function setCornerVideoHeight() {
+                console.log('setCornerVideoHeight', ARENA.localVideoWidth, _this.jitsiVideoElem.videoWidth , _this.jitsiVideoElem.videoHeight, _this.jitsiVideoElem)
                 const videoWidth = ARENA.localVideoWidth;
                 const videoHeight = _this.jitsiVideoElem.videoHeight /
                                         (_this.jitsiVideoElem.videoWidth / videoWidth);
