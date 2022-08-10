@@ -186,10 +186,6 @@ AFRAME.registerComponent('world-sensor', {
         const mesh = this.newMeshNode(worldMesh);
 
         worldMeshGroup.add(mesh);
-
-        const axesHelper = createAxesHelper([0.1, 0.1, 0.1]);
-        worldMeshGroup.add(axesHelper);
-
         // worldMesh.node = worldMeshGroup;
         this.addPlane(worldMesh, worldMeshGroup);
 
@@ -280,25 +276,3 @@ const publishMsg = (msg) => {
     ARENA.Mqtt.publish(`${ARENA.outputTopic}${ARENA.camName}/geometry`, JSON.stringify(msg));
 };
 
-const createAxesHelper = (size=[1, 1, 1]) => {
-    const vertices = [
-        0, 0, 0,	size[0], 0, 0,
-        0, 0, 0,	0, size[1], 0,
-        0, 0, 0,	0, 0, size[2],
-    ];
-
-    const colors = [
-        1, 0, 0,	1, 0.6, 0,
-        0, 1, 0,	0.6, 1, 0,
-        0, 0, 1,	0, 0.6, 1,
-    ];
-
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-    geometry.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
-
-    const material = new THREE.LineBasicMaterial( {vertexColors: THREE.VertexColors} );
-
-    const helper = new THREE.LineSegments(geometry, material);
-    return helper;
-};
