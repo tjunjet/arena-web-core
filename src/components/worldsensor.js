@@ -68,12 +68,12 @@ AFRAME.registerComponent('world-sensor', {
     },
     createMapRoot: function() {
         if (this.mapRoot) {
-            this.mapRoot.parentElement.removeChild(this.mapRoot);
+            this.mapRoot.remove();
         }
         this.mapRoot = document.createElement('a-entity');
         this.mapRoot.setAttribute('id', 'ARMapRoot');
         this.mapRoot.setAttribute('position', '0 1.6 0');
-        document.querySelector('a-scene').appendChild(this.mapRoot);
+        document.getElementById('cameraSpinner').appendChild(this.mapRoot);
     },
     handleAnimationFrame: function(t, xrFrame) {
         if (!this.session || this.session.ended) return;
@@ -207,6 +207,7 @@ AFRAME.registerComponent('world-sensor', {
 
         const anchorEl = document.createElement('a-entity');
         anchorEl.setAttribute('id', worldMesh.uid);
+        anchorEl.setAttribute('material-extras', {transparentOccluder: true});
         this.mapRoot.append(anchorEl);
 
         group.anchor = worldMesh;
@@ -256,7 +257,7 @@ AFRAME.registerComponent('world-sensor', {
 
         // transparent mesh
         const wireMaterial = new THREE.MeshPhongMaterial({color: edgeColor, wireframe: true});
-        const material = new THREE.MeshPhongMaterial({color: polyColor, transparent: true, opacity: 0.25});
+        const material = new THREE.MeshPhongMaterial({color: polyColor, transparent: true, opacity: 0.1});
 
         mesh.add(new THREE.Mesh(geometry, material));
         mesh.add(new THREE.Mesh(geometry, wireMaterial));
