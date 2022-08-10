@@ -6,6 +6,24 @@ import almostEqual from 'almost-equal';
 
 /* global AFRAME, THREE */
 
+AFRAME.registerComponent('ui-panel', {
+    schema: {
+        width: {default: 1},
+        height: {default: 1},
+    },
+    init: function() {
+        this.el.setAttribute('geometry', {
+            primitive: 'roundedbox',
+            width: this.data.width,
+            height: this.data.height,
+        });
+        this.el.setAttribute('material', {
+            color: '#0033FF',
+            opacity: 0.9,
+        });
+    },
+});
+
 AFRAME.registerComponent('ui-tracker', {
     schema: {
         enabled: {default: true},
@@ -29,14 +47,17 @@ AFRAME.registerComponent('ui-tracker', {
         this.startRotation = new THREE.Quaternion();
         this.targetRotation = new THREE.Quaternion();
 
+        this.activated = false;
+
         this.activationObject.addEventListener('mouseenter', function(evt) {
-            self.activationObject.object3D.scale.set(0.6, 0.6, 0.6);
+            // self.activationObject.object3D.scale.set(0.5, 0.5, 0.5);
         });
         this.activationObject.addEventListener('mouseleave', function(evt) {
-            self.activationObject.object3D.scale.set(0.4, 0.4, 0.4);
+            // self.activationObject.object3D.scale.set(0.4, 0.4, 0.4);
         });
         this.activationObject.addEventListener('mousedown', function(evt) {
-            //
+            this.activated = !this.activated;
+            self.activationObject.children[0].object3D.visible = this.activated;
         });
     },
     tick: function() {
