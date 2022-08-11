@@ -207,7 +207,6 @@ AFRAME.registerComponent('world-sensor', {
 
         const anchorEl = document.createElement('a-entity');
         anchorEl.setAttribute('id', worldMesh.uid);
-        anchorEl.setAttribute('material-extras', {transparentOccluder: true});
         this.mapRoot.append(anchorEl);
 
         group.anchor = worldMesh;
@@ -257,12 +256,16 @@ AFRAME.registerComponent('world-sensor', {
 
         // transparent mesh
         const wireMaterial = new THREE.MeshPhongMaterial({color: edgeColor, wireframe: true});
-        const material = new THREE.MeshPhongMaterial({color: polyColor, transparent: true, opacity: 0.1});
+        const material = new THREE.Material({colorWrite: false});
 
-        mesh.add(new THREE.Mesh(geometry, material));
+        const occludeMesh = new THREE.Mesh(geometry, material);
+        occludeMesh.renderOrder = 0;
+
+        mesh.add(occludeMesh);
         mesh.add(new THREE.Mesh(geometry, wireMaterial));
 
         mesh.geometry = geometry; // for later use
+
 
         // worldMesh.mesh = mesh;
 
