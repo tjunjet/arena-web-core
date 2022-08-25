@@ -8,7 +8,8 @@
  * @date 2020
  */
 
-const RoundedBoxGeometry = require('./three-rounded-box/index.js')(THREE);
+import roundedBox from './three-rounded-box/index.js';
+const RoundedBoxGeometry = roundedBox(THREE);
 
 AFRAME.registerGeometry('roundedbox', {
     schema: {

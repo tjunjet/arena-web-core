@@ -16,10 +16,50 @@ AFRAME.registerComponent('ui-panel', {
             primitive: 'roundedbox',
             width: this.data.width,
             height: this.data.height,
+            depth: 0.05,
         });
+        this.el.setAttribute('scale', '0.5 0.5 0.5');
         this.el.setAttribute('material', {
-            color: '#0033FF',
+            color: '#424470',
             opacity: 0.9,
+        });
+    },
+});
+
+AFRAME.registerComponent('rounded-button', {
+    schema: {
+        width: {default: 1},
+        height: {default: 1},
+        text: {type: 'string', default: 'Left'},
+        textWidth: {default: 12},
+        textAlign: {type: 'string', default: 'center'},
+    },
+    init: function() {
+        this.el.setAttribute('geometry', {
+            primitive: 'roundedbox',
+            width: this.data.width,
+            height: this.data.height,
+            depth: 0.15,
+        });
+        this.orgZ = this.el.position.z;
+        this.el.setAttribute('material', {
+            opacity: 0.88,
+        });
+        this.el.position.z += 0.06;
+        const label = document.createElement('a-asset');
+        label.setAttribute('text', {
+            value: this.data.text,
+            width: this.data.width,
+            align: this.data.textAlign,
+        });
+        this.el.append(label);
+        this.el.addListener('mousedown', () => {
+            this.el.position = this.orgZ + 0.035;
+            this.el.setAttribute('geometry', 'depth', 0.1);
+        });
+        this.el.addListener('mouseup', () => {
+            this.el.position = this.orgZ + 0.06;
+            this.el.setAttribute('geometry', 'depth', 0.1);
         });
     },
 });
