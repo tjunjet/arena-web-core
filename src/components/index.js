@@ -57,3 +57,4 @@ import './vendor/aframe-look-at-component.min.js'; // Look at component https://
 import './vendor/aframe-multisrc-component.js'; // add separate image/video textures: https://github.com/elbobo/aframe-multisrc-component
 import './vendor/transparent-occlude.js'; // borrowed from aframe-render-order.js: https://github.com/supermedium/superframe#readme
 import './vendor/morphTarget.js'; // target and control a gltf model's morphTargets: https://github.com/elbobo/aframe-gltf-morph-component
+import './vendor/aframe-babia-components.min.js'; // Charting components
