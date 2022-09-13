@@ -37,6 +37,8 @@ import './threejs-scene.js';
 import './ttl.js';
 import './video-control.js';
 
+import './hybrid'
+
 /**
  * Additional A-Frame components and systems
  */

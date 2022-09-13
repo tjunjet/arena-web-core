@@ -301,6 +301,7 @@ export class Arena {
         camera.setAttribute('arena-camera', 'enabled', ARENA.isUsersPermitted());
         camera.setAttribute('arena-camera', 'color', color);
         camera.setAttribute('arena-camera', 'displayName', ARENA.getDisplayName());
+        camera.setAttribute('render-client', 'enabled', true);
 
         const startPos = new THREE.Vector3;
         if (ARENA.startCoords) {
@@ -743,6 +744,9 @@ export class Arena {
                 // prevent local name when non-interactive
                 this.noname = true;
             }
+
+            const camera = document.getElementById('my-camera');
+            camera.setAttribute('render-client', 'enabled', true);
 
             if (this.armode) {
                 /*
