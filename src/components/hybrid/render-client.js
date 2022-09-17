@@ -1,4 +1,5 @@
 import {MQTTSignaling} from './signaling/mqtt-signaling';
+import {WebRTCStatsLogger} from './webrtc-stats';
 import {ARENAUtils} from '../../utils';
 
 const peerConnectionConfig = {
@@ -86,23 +87,9 @@ AFRAME.registerComponent('render-client', {
         this.peerConnection = new RTCPeerConnection(peerConnectionConfig);
         this.peerConnection.onicecandidate = this.onIceCandidate.bind(this);
         this.peerConnection.ontrack = this.onRemoteTrack.bind(this);
-
-        // window.setInterval(() => {
-        //     this.peerConnection.getStats(function(res) {
-        //         var items = [];
-        //         res.result().forEach(function(res) {
-        //             var item = {};
-        //             res.names().forEach(function(name) {
-        //                 item[name] = res.stat(name);
-        //             });
-        //             item.id = res.id;
-        //             item.type = res.type;
-        //             item.timestamp = res.timestamp;
-        //             items.push(item);
-        //         });
-        //         console.log(items);
-        //     });
-        // }, 5000);
+        this.peerConnection.oniceconnectionstatechange = () => {
+            console.log('[render-client] iceConnectionState changed:,', this.peerConnection.iceConnectionState);
+        };
 
         this.dataChannel = this.peerConnection.createDataChannel('client-input');
 
@@ -113,6 +100,8 @@ AFRAME.registerComponent('render-client', {
         this.dataChannel.onclose = () => {
             console.log('Data Channel is Closed');
         };
+
+        this.stats = new WebRTCStatsLogger(this.peerConnection, 1000);
 
         this.peerConnection.setRemoteDescription(new RTCSessionDescription(offer))
             .then(() => {
@@ -154,6 +143,7 @@ AFRAME.registerComponent('render-client', {
 
     gotAnswer(answer) {
         console.log('got answer.');
+
         this.peerConnection.setRemoteDescription(new RTCSessionDescription(answer))
             .then(() => {
                 this.connected = true;
