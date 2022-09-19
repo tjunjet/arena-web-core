@@ -733,6 +733,7 @@ export class ARENAJitsi {
                 const videoWidth = ARENA.localVideoWidth;
                 const videoHeight = _this.jitsiVideoElem.videoHeight /
                                         (_this.jitsiVideoElem.videoWidth / videoWidth);
+                const videoStreamStats = _this.getVideoStreamStats(_this.jitsiVideoElem);
                 _this.jitsiVideoElem.style.width = videoWidth + 'px';
                 _this.jitsiVideoElem.style.height = videoHeight + 'px';
             }
@@ -747,6 +748,23 @@ export class ARENAJitsi {
                 setCornerVideoHeight();
             });
         }
+    }
+
+    getVideoStreamStats(stream) {
+        let gcd = function(a, b) {
+            if (b < 0.0000001) return a;
+            return gcd(b, Math.floor(a % b));
+        };
+
+        const fraction = width / height;
+        const len = fraction.toString().length - 2;
+        const denominator = Math.pow(10, len);
+        const numerator = fraction * denominator;
+        const divisor = gcd(numerator, denominator);
+
+        numerator /= divisor;
+        denominator /= divisor;
+        return `${stream.videoWidth}x${stream.videoHeight} ${Math.floor(numerator)}:${Math.floor(denominator)}`;
     }
 
     /**

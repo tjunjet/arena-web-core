@@ -33,7 +33,7 @@
 * **build:** update primitives meshes to three.js default dimensions ([8e8775f](https://github.com/arenaxr/arena-web-core/commit/8e8775ff7a7bc7f49e7d65b88b57fc9b6a875570))
 * don't attach camera objects to my-camera ([860eac7](https://github.com/arenaxr/arena-web-core/commit/860eac7adfa61e4003fecf2a5f7fe3758b32ebe3))
 * **jitsi-video:** force jitsi setup to end of persist load ([048189a](https://github.com/arenaxr/arena-web-core/commit/048189ac236ff49a3e86010bd856fe2671ac4684))
-* **videosphere:** update tracks with 2:1 aspect; remove Panoramic presense selection ([d28c912](https://github.com/arenaxr/arena-web-core/commit/d28c912e4bfad20216c803dc3e3058d58e7132cf))
+* **videosphere:** update tracks with 2:1 aspect; remove Panoramic presence selection ([d28c912](https://github.com/arenaxr/arena-web-core/commit/d28c912e4bfad20216c803dc3e3058d58e7132cf))
 
 ## [1.10.0](https://github.com/arenaxr/arena-web-core/compare/v1.9.0...v1.10.0) (2022-08-06)
 
