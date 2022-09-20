@@ -45,6 +45,7 @@ import './video-control.js';
 import 'webxr-polyfill'; // fallback for non-webXR browsers
 import 'aframe-environment-component'; // pretty environments
 import 'aframe-blink-controls'; // Controller teleport
+import 'aframe-gui'; // UI elements
 // NPM import overrides
 import './vendor/animation-mixer.js'; // Override animation mixer
 
