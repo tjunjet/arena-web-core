@@ -101,7 +101,7 @@ AFRAME.registerComponent('render-client', {
             console.log('Data Channel is Closed');
         };
 
-        this.stats = new WebRTCStatsLogger(this.peerConnection, 1000);
+        this.stats = new WebRTCStatsLogger(this.peerConnection, 1000, this.signaler);
 
         this.peerConnection.setRemoteDescription(new RTCSessionDescription(offer))
             .then(() => {

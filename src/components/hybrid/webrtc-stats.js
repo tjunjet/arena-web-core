@@ -1,8 +1,8 @@
 export class WebRTCStatsLogger {
-    constructor(peerConnection, updateInterval) {
+    constructor(peerConnection, updateInterval, signaler) {
         this.peerConnection = peerConnection;
         this.updateInterval = updateInterval;
-
+        this.signaler = signaler;
         this.lastReport = null;
 
         this.startLogging();
@@ -22,6 +22,8 @@ export class WebRTCStatsLogger {
             if (stat.type !== 'inbound-rtp') {
                 return;
             }
+
+            this.signaler.sendStats(stat)
 
             if (stat.codecId != undefined) {
                 const codec = report.get(stat.codecId);

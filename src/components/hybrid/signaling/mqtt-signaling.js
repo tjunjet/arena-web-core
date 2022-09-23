@@ -10,6 +10,8 @@ const CLIENT_OFFER_TOPIC_PREFIX = 'realm/g/a/cloud_rendering_test/client/offer';
 const CLIENT_ANSWER_TOPIC_PREFIX = 'realm/g/a/cloud_rendering_test/client/answer';
 const CLIENT_CANDIDATE_TOPIC_PREFIX = 'realm/g/a/cloud_rendering_test/client/candidate';
 
+const STATS_TOPIC_PREFIX = 'realm/g/a/cloud_rendering_test/stats_browser';
+
 const UPDATE_REMOTE_STATUS_TOPIC_PREFIX = 'realm/g/a/cloud_rendering_test/client/remote';
 
 export class MQTTSignaling {
@@ -131,6 +133,13 @@ export class MQTTSignaling {
             `${UPDATE_REMOTE_STATUS_TOPIC_PREFIX}/${this.id}`,
             JSON.stringify({'type': 'remote-update', 'source': 'client', 'id': this.id, 'data': update})
         );
+    }
+
+    sendStats(stats) {
+        this.publish(
+            `${STATS_TOPIC_PREFIX}/${this.id}`,
+            JSON.stringify(stats)
+        )
     }
 
     sleep(ms) {
