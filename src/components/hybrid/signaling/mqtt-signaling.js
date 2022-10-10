@@ -1,18 +1,18 @@
 const Paho = require('paho-mqtt');
 
-const SERVER_OFFER_TOPIC_PREFIX = 'realm/g/a/cloud_rendering_test/server/offer';
-const SERVER_ANSWER_TOPIC_PREFIX = 'realm/g/a/cloud_rendering_test/server/answer';
-const SERVER_CANDIDATE_TOPIC_PREFIX = 'realm/g/a/cloud_rendering_test/server/candidate';
+const SERVER_OFFER_TOPIC_PREFIX = 'realm/g/a/hybrid_rendering/server/offer';
+const SERVER_ANSWER_TOPIC_PREFIX = 'realm/g/a/hybrid_rendering/server/answer';
+const SERVER_CANDIDATE_TOPIC_PREFIX = 'realm/g/a/hybrid_rendering/server/candidate';
 
-const CLIENT_CONNECT_TOPIC_PREFIX = 'realm/g/a/cloud_rendering_test/client/connect';
-const CLIENT_DISCONNECT_TOPIC_PREFIX = 'realm/g/a/cloud_rendering_test/client/disconnect';
-const CLIENT_OFFER_TOPIC_PREFIX = 'realm/g/a/cloud_rendering_test/client/offer';
-const CLIENT_ANSWER_TOPIC_PREFIX = 'realm/g/a/cloud_rendering_test/client/answer';
-const CLIENT_CANDIDATE_TOPIC_PREFIX = 'realm/g/a/cloud_rendering_test/client/candidate';
+const CLIENT_CONNECT_TOPIC_PREFIX = 'realm/g/a/hybrid_rendering/client/connect';
+const CLIENT_DISCONNECT_TOPIC_PREFIX = 'realm/g/a/hybrid_rendering/client/disconnect';
+const CLIENT_OFFER_TOPIC_PREFIX = 'realm/g/a/hybrid_rendering/client/offer';
+const CLIENT_ANSWER_TOPIC_PREFIX = 'realm/g/a/hybrid_rendering/client/answer';
+const CLIENT_CANDIDATE_TOPIC_PREFIX = 'realm/g/a/hybrid_rendering/client/candidate';
 
-const STATS_TOPIC_PREFIX = 'realm/g/a/cloud_rendering_test/stats_browser';
+const STATS_TOPIC_PREFIX = 'realm/g/a/hybrid_rendering/stats_browser';
 
-const UPDATE_REMOTE_STATUS_TOPIC_PREFIX = 'realm/g/a/cloud_rendering_test/client/remote';
+const UPDATE_REMOTE_STATUS_TOPIC_PREFIX = 'realm/g/a/hybrid_rendering/client/remote';
 
 export class MQTTSignaling {
     constructor(id) {
@@ -55,14 +55,14 @@ export class MQTTSignaling {
     mqttOnConnect() {
         this.client.onMessageArrived = this.mqttOnMessageArrived.bind(this);
 
-        this.client.subscribe(`${SERVER_OFFER_TOPIC_PREFIX}/#`);
-        this.client.subscribe(`${SERVER_ANSWER_TOPIC_PREFIX}/#`);
-        this.client.subscribe(`${SERVER_CANDIDATE_TOPIC_PREFIX}/#`);
+        this.client.subscribe(`${SERVER_OFFER_TOPIC_PREFIX}/${ARENA.namespacedScene}/#`);
+        this.client.subscribe(`${SERVER_ANSWER_TOPIC_PREFIX}/${ARENA.namespacedScene}/#`);
+        this.client.subscribe(`${SERVER_CANDIDATE_TOPIC_PREFIX}/${ARENA.namespacedScene}/#`);
     }
 
     closeConnection() {
         this.publish(
-            `${CLIENT_DISCONNECT_TOPIC_PREFIX}/${this.id}`,
+            `${CLIENT_DISCONNECT_TOPIC_PREFIX}/${ARENA.namespacedScene}/${this.id}`,
             JSON.stringify({'type': 'disconnect', 'source': 'client', 'id': this.id})
         );
 
@@ -102,42 +102,42 @@ export class MQTTSignaling {
 
     sendConnect() {
         this.publish(
-            `${CLIENT_CONNECT_TOPIC_PREFIX}/${this.id}`,
+            `${CLIENT_CONNECT_TOPIC_PREFIX}/${ARENA.namespacedScene}/${this.id}`,
             JSON.stringify({'type': 'connect', 'source': 'client', 'id': this.id})
         );
     }
 
     sendOffer(offer) {
         this.publish(
-            `${CLIENT_OFFER_TOPIC_PREFIX}/${this.id}`,
+            `${CLIENT_OFFER_TOPIC_PREFIX}/${ARENA.namespacedScene}/${this.id}`,
             JSON.stringify({'type': 'offer', 'source': 'client', 'id': this.id, 'data': offer})
         );
     }
 
     sendAnswer(answer) {
         this.publish(
-            `${CLIENT_ANSWER_TOPIC_PREFIX}/${this.id}`,
+            `${CLIENT_ANSWER_TOPIC_PREFIX}/${ARENA.namespacedScene}/${this.id}`,
             JSON.stringify({'type': 'answer', 'source': 'client', 'id': this.id, 'data': answer})
         );
     }
 
     sendCandidate(candidate) {
         this.publish(
-            `${CLIENT_CANDIDATE_TOPIC_PREFIX}/${this.id}`,
+            `${CLIENT_CANDIDATE_TOPIC_PREFIX}/${ARENA.namespacedScene}/${this.id}`,
             JSON.stringify({'type': 'ice', 'source': 'client', 'id': this.id, 'data': candidate})
         );
     }
 
     sendRemoteStatusUpdate(update) {
         this.publish(
-            `${UPDATE_REMOTE_STATUS_TOPIC_PREFIX}/${this.id}`,
+            `${UPDATE_REMOTE_STATUS_TOPIC_PREFIX}/${ARENA.namespacedScene}/${this.id}`,
             JSON.stringify({'type': 'remote-update', 'source': 'client', 'id': this.id, 'data': update})
         );
     }
 
     sendStats(stats) {
         this.publish(
-            `${STATS_TOPIC_PREFIX}/${this.id}`,
+            `${STATS_TOPIC_PREFIX}/${ARENA.namespacedScene}/${this.id}`,
             JSON.stringify(stats)
         )
     }
