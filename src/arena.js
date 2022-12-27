@@ -772,4 +772,5 @@ export class Arena {
 /**
  * ARENA global object
  */
-module.exports = window.ARENA = Arena.init();
+window.ARENA = Arena.init();
+export default ARENA;
