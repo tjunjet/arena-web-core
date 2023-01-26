@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.16.0](https://github.com/arenaxr/arena-web-core/compare/v1.15.0...v1.16.0) (2023-01-26)
+
+
+### Features
+
+* add parent to program schema; temporarily make 'pytest' the default ([8f03835](https://github.com/arenaxr/arena-web-core/commit/8f0383563b8b497c4601edfd15b2afff69a3f5a9))
+
 ## [1.15.0](https://github.com/arenaxr/arena-web-core/compare/v1.14.1...v1.15.0) (2023-01-18)
 
 
