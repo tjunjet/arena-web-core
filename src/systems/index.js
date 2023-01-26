@@ -7,7 +7,7 @@
  */
 
 /**
- * ARENA A-Frame systems
+ * aARENA A-Frame systems
  */
 
 import './armarker/armarker.js';

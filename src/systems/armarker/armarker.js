@@ -73,7 +73,7 @@ AFRAME.registerSystem('armarker', {
     init: function() {
         // init this.ATLASMarkers with list of markers within range
         this.getARMArkersFromATLAS(true);
-
+ 	console.log("Hello");
         // check if this is WebXRViewer/WebARViewer
         this.isWebARViewer = navigator.userAgent.includes('WebXRViewer') || navigator.userAgent.includes('WebARViewer');
 
