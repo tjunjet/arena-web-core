@@ -191,7 +191,7 @@ AFRAME.registerSystem('armarker', {
         }
 
         // create cv worker for apriltag detection
-        this.cvWorker = new Worker(new URL('dist/alva_ar.js', import.meta.url), {type: 'module'});
+        this.cvWorker = new Worker(new URL('src/systems/armarker/slam-detector/alva_ar.js', import.meta.url), {type: 'module'});
         this.cameraCapture.setCVWorker(this.cvWorker); // let camera capture know about the cv worker
 
         // listen for worker messages
