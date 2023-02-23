@@ -1,17 +1,5 @@
-/* global AFRAME, ARENA, THREE, ARENAUtils */
-
-/**
- * @fileoverview ARMarker System. Supports ARMarkers in a scene.
- * Attempts to detect device and setup camera capture accordingly:
- *   AR Headset: capture camera facing forward using getUserMedia
- *   Phone/tablet with WebXR Camera Capture API support: capture passthrough camera
- *   frames using the WebXR camera capture API (only in Android Chrome v93+)
- *   iPhone/iPad with custom browser: camera capture for Mozilla's WebXRViewer/WebARViewer
- *
- * Open source software under the terms in /LICENSE
- * Copyright (c) 2020, The CONIX Research Center. All rights reserved.
- * @date 2020
- */
+// Attempts to grab the camera frames from the device and performs 
+// SLAM on it
 
 import {WebXRCameraCapture} from './camera-capture/ccwebxr';
 import {WebARCameraCapture} from './camera-capture/ccwebar';
@@ -26,7 +14,8 @@ import {ARENAUtils} from '../../utils';
   * ARMarker System. Supports ARMarkers in a scene.
   * @module armarker-system
   */
-AFRAME.registerSystem('armarker', {
+
+ AFRAME.registerSystem('armarker', {
     schema: {
         /* camera capture debug: creates a plane texture-mapped with the camera frames */
         debugCameraCapture: {default: false},
@@ -191,7 +180,7 @@ AFRAME.registerSystem('armarker', {
         }
 
         // create cv worker for apriltag detection
-        this.cvWorker = new Worker(new URL('dist/alva_ar.js', import.meta.url), {type: 'module'});
+        this.cvWorker = new Worker(new URL('dist/apriltag.js', import.meta.url), {type: 'module'});
         this.cameraCapture.setCVWorker(this.cvWorker); // let camera capture know about the cv worker
 
         // listen for worker messages
